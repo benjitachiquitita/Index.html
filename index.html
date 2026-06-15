@@ -1,0 +1,178 @@
+     
+             
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Woods - Generador de Sensibilidad Pro</title>
+    <style>
+        body { background:#0d0d0d; color:#fff; font-family:sans-serif; display:flex; flex-direction:column; align-items:center; padding:20px; margin:0; }
+        .box, .info-container { width:100%; max-width:380px; box-sizing:border-box; border-radius:12px; }
+        .box { background:#1a1a1a; padding:25px; border:1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h1 { text-align:center; color:#f33; margin:0 0 5px 0; text-transform:uppercase; font-size:24px; letter-spacing:1px; }
+        .subtitle { text-align:center; font-size:11px; color:#aaa; margin-bottom:20px; text-transform:uppercase; }
+        label { display:block; margin:10px 0 4px 0; font-size:12px; color:#ccc; font-weight:bold; }
+        select, input, .copy-box { width:100%; padding:10px; background:#2a2a2a; border:1px solid #444; border-radius:6px; color:#fff; box-sizing:border-box; font-size:14px; }
+        select, input { margin-bottom:12px; }
+        select:focus, input:focus { border-color: #f33; outline: none; }
+        button { width:100%; padding:12px; background:#f33; border:none; border-radius:6px; color:#fff; font-weight:bold; cursor:pointer; text-transform:uppercase; font-size:14px; transition: background 0.2s; margin-top: 10px; }
+        button:hover { background:#d22; }
+        .res { margin-top:20px; background:#0e0e0e; padding:15px; border-radius:8px; border:1px dashed #f33; display:none; }
+        .line { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #1a1a1a; font-size:14px; }
+        .res span:last-child { font-size: 20px; font-weight: 900; color: #fff; }
+        .red { color:#f33 !important; font-size: 22px !important; }
+        .copy-box { height: 120px; background: #222; font-family: monospace; font-size: 11px; resize: none; margin-top: 10px; }
+        .info-container { margin-top:25px; background:#141414; padding:15px; border:1px solid #222; }
+        .info-title { color:#fff; font-size:14px; font-weight:bold; margin-bottom:12px; border-left:3px solid #f33; padding-left:8px; text-transform:uppercase; }
+        .card { background:#1c1c1c; padding:12px; border-radius:6px; margin-bottom:10px; font-size:12px; line-height:1.5; border:1px solid #2a2a2a; }
+        .card-title { font-weight:bold; color:#f33; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>System Woods</h1>
+    <div class="subtitle">AI Sensitivity Generator</div>
+    
+    <label>Marca / Plataforma:</label>
+    <select id="m">
+        <option value="Samsung">Samsung</option>
+        <option value="Xiaomi / POCO">Xiaomi / POCO</option>
+        <option value="Motorola">Motorola</option>
+        <option value="iPhone">iPhone</option>
+        <option value="LG">LG</option>
+        <option value="Realme">Realme</option>
+        <option value="Oppo">Oppo</option>
+        <option value="Vivo">Vivo</option>
+        <option value="Huawei">Huawei</option>
+        <option value="PC">PC / Emulador (Mouse)</option>
+    </select>
+
+    <label>Modelo / Emulador:</label>
+    <input type="text" id="mod" placeholder="Ej: S23, Poco X5, SmartGaGa, BlueStacks...">
+
+    <label>Tasa de Refresco (Hz Pantalla):</label>
+    <select id="hzInput">
+        <option value="60 Hz">60 Hz (Estándar)</option>
+        <option value="90 Hz">90 Hz (Fluido)</option>
+        <option value="120 Hz" selected>120 Hz (Alta Gama / Pro)</option>
+        <option value="144 Hz">144 Hz (Gaming / Competitivo)</option>
+        <option value="240 Hz">240 Hz (Ultra Gaming)</option>
+    </select>
+
+    <label>Sensibilidad Base:</label>
+    <select id="s">
+        <option value="alta">Alta</option>
+        <option value="media" selected>Media</option>
+        <option value="baja">Baja</option>
+    </select>
+
+    <label>Tamaño de Botón:</label>
+    <select id="btnSize">
+        <option value="pequeño">Pequeño</option>
+        <option value="mediano" selected>Mediano</option>
+        <option value="grande">Grande</option>
+    </select>
+
+    <label>Configuración DPI:</label>
+    <select id="d">
+        <option value="0">Sin DPI / Defecto</option>
+        <option value="1">Con DPI Optimizado</option>
+    </select>
+
+    <button onclick="gen()">Generar Sensi</button>
+
+    <div id="r" class="res">
+        <div class="line"><span>📱 <b>Hardware:</b></span> <span id="r1"></span></div>
+        <div class="line"><span>⚡ <b>Frecuencia:</b></span> <span id="r2"></span></div>
+        <div class="line"><span>🔥 <b>General (Eje X):</b></span> <span id="r3" class="red"></span></div>
+        <div class="line"><span>🔴 <b>Punto Rojo (Eje Y):</b></span> <span id="r4"></span></div>
+        <div class="line"><span>🎯 <b>Mira 2x:</b></span> <span id="r5"></span></div>
+        <div class="line"><span>⚡ <b>Mira 4x:</b></span> <span id="r6"></span></div>
+        <div class="line"><span>🔘 <b>Botón / Ajuste:</b></span> <span id="r7"></span></div>
+        <div class="line"><span>🛠️ <b>Calibración DPI:</b></span> <span id="r8" class="red"></span></div>
+        
+        <label style="margin-top:15px; color:#f33;">Texto para copiar (Formato Calibrador):</label>
+        <textarea id="copyText" class="copy-box" readonly onclick="this.select()"></textarea>
+    </div>
+</div>
+
+<div class="info-container">
+    <div class="info-title">¿Por qué System Woods es el mejor?</div>
+    <div class="card"><div class="card-title">🔬 Calibración Científica</div>System Woods analiza la densidad de píxeles para lograr una sincronía matemática y un 'drag' perfecto.</div>
+    <div class="card"><div class="card-title">⚖️ Balanceo Armónico</div>Crea una armonía entre la sensibilidad General y las miras, eliminando la aceleración errática.</div>
+</div>
+
+<script>
+    function num(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function numDec(min, max) { return (Math.random() * (max - min) + min).toFixed(2); }
+
+    function gen() {
+        const marca = document.getElementById("m").value,
+              modelo = document.getElementById("mod").value || "Genérico",
+              sensi = document.getElementById("s").value,
+              btnSize = document.getElementById("btnSize").value,
+              dpiOpt = document.getElementById("d").value,
+              hzSeleccionado = document.getElementById("hzInput").value;
+        
+        const hz = hzSeleccionado + " / Sync";
+        document.getElementById("r2").innerText = hz;
+        document.getElementById("r1").innerText = marca + " " + modelo;
+
+        let modHz = hzSeleccionado.includes("60") ? -4 : (hzSeleccionado.includes("120") ? 3 : (hzSeleccionado.includes("144") ? 6 : (hzSeleccionado.includes("240") ? 10 : 0)));
+        let g, pr, m2, m4, boton, dpiTxt;
+
+        if (marca === "PC") {
+            dpiTxt = (dpiOpt === "0") ? "400 DPI Nativo" : "800 DPI Optimizado";
+            boton = "1000Hz (Polling)";
+
+            let base = (sensi === "baja") ? 0.85 : (sensi === "media" ? 1.45 : 2.10);
+            base += (modHz * 0.02);
+
+            g = numDec(base - 0.10, base + 0.10);
+            let sNum = parseFloat(g);
+            pr = numDec(sNum * 1.08, sNum * 1.12);
+            m2 = numDec(sNum * 0.92, sNum * 0.98);
+            m4 = numDec(sNum * 0.82, sNum * 0.88);
+        } else {
+            dpiTxt = (dpiOpt === "0") ? "Sin DPI (Defecto)" : "600 DPI Optimizado";
+            
+            let gMin, gMax, rMin, rMax, m2Min, m2Max, m4Min, m4Max, bMin, bMax;
+            if (sensi === "baja") { gMin=81; gMax=95; rMin=80; rMax=92; m2Min=75; m2Max=86; m4Min=70; m4Max=82; }
+            else if (sensi === "media") { gMin=131; gMax=145; rMin=125; rMax=138; m2Min=115; m2Max=132; m4Min=110; m4Max=126; }
+            else { gMin=151; gMax=185; rMin=145; rMax=178; m2Min=140; m2Max=172; m4Min=135; m4Max=166; }
+
+            if (btnSize === "pequeño") { bMin=35; bMax=42; }
+            else if (btnSize === "mediano") { bMin=43; bMax=55; }
+            else { bMin=56; bMax=70; }
+
+            g = num(gMin + modHz, gMax + modHz);
+            pr = num(rMin + modHz, rMax + modHz);
+            m2 = num(m2Min + modHz, m2Max + modHz);
+            m4 = num(m4Min + modHz, m4Max + modHz);
+            boton = num(bMin, bMax) + "%";
+
+            if (dpiOpt === "1") {
+                let baseDpi = Math.round((78000 / g) / 5) * 5;
+                if (marca === "iPhone") baseDpi = Math.round((62000 / g) / 5) * 5;
+                let dpiCalculado = Math.max(410, Math.min(960, baseDpi));
+                dpiTxt = dpiCalculado + " DPI (Perfecto para Sensi " + g + ")";
+            }
+        }
+
+        document.getElementById("r3").innerText = g;
+        document.getElementById("r4").innerText = pr;
+        document.getElementById("r5").innerText = m2;
+        document.getElementById("r6").innerText = m4;
+        document.getElementById("r7").innerText = boton;
+        document.getElementById("r8").innerText = dpiTxt;
+
+        document.getElementById("copyText").value = `Configuración para ${marca} ${modelo}: General/X: ${g}, Punto Rojo/Y: ${pr}, Mira 2x: ${m2}, Mira 4x: ${m4}, Botón: ${boton}, Frecuencia: ${hz}, DPI: ${dpiTxt}. Calibrado por System Woods.`;
+        document.getElementById("r").style.display = "block";
+    }
+</script>
+</body>
+</html>
